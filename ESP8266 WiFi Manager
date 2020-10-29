@@ -1,1 +1,40 @@
-Text code
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#include <DNSServer.h>
+#include <SPI.h>
+#include <WiFiManager.h>
+
+#define NAME_AP  "WiFiManager"
+//ใช้บอร์ดของ Scot-thai ไม่ต้องเปลียนขา
+int LED_Status  =  D4; 
+int ConfigWiFi_Pin = D0;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LED_Status, OUTPUT);
+  pinMode(ConfigWiFi_Pin, INPUT_PULLUP);
+
+  Serial.println("Starting...");
+
+  WiFiManager wifiManager;
+  if (digitalRead(ConfigWiFi_Pin) == 1)
+  {
+    digitalWrite(LED_Status, HIGH);
+    Serial.println("ConfigWiFi");
+    wifiManager.resetSettings();
+  }
+  wifiManager.autoConnect(NAME_AP);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(300);
+    Serial.print(".");
+  }
+  Serial.println("WiFi connected");
+  digitalWrite(LED_Status, LOW);
+}
+
+void loop() {
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+  delay(1000);
+}
