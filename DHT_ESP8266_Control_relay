@@ -1,0 +1,62 @@
+//Library:
+#include "DHT.h"
+DHT dht(D3, DHT11, 0);
+
+#include <ESP8266WiFi.h>
+const char* ssid = "SCOT";
+const char* password = "scot1234";
+
+int Relay_1 =  D5;
+int Relay_2 =  D6;
+int Relay_3 =  D7;
+int Relay_4 =  D8;
+int LEDRUN  =  D4;
+float h, t;
+
+void setup() {
+  Serial.begin(115200);
+  dht.begin();
+
+  WiFi.begin(ssid, password);
+  Serial.println("\nConnecting to WiFi");
+  if (WiFi.begin(ssid, password)) {
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+    }
+  }
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+void Sensor() {
+  h = dht.readHumidity();
+  t = dht.readTemperature();
+  if (isnan(h) || isnan(t)) {
+    return;
+  }
+}
+
+void loop() {
+  LED_ONLINE();
+  if (dht.read()) {
+    h = dht.readHumidity();
+    t = dht.readTemperature();
+    Serial.printf("H = %.1f | T = %.1f", h, t); Serial.println();
+  }
+  if (t > 35.5) {
+    digitalWrite(Relay_1, HIGH);
+    Serial.println("Relay On");
+  }
+  else {
+    digitalWrite(Relay_1, LOW);
+    Serial.println("Relay Off");
+  }
+  delay(1000);
+}
+
+void LED_ONLINE() {
+  digitalWrite(LEDRUN, HIGH); delay(30);
+  digitalWrite(LEDRUN, LOW); delay(50);
+}
