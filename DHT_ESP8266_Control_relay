@@ -21,6 +21,7 @@ void setup() {
   Serial.begin(115200);
   dht.begin();
   lcd.begin();
+
   pinMode(Relay_1, OUTPUT);
   pinMode(Relay_2, OUTPUT);
   pinMode(Relay_3, OUTPUT);
@@ -49,7 +50,6 @@ void Sensor() {
 }
 
 void loop() {
-  LED_ONLINE();
   if (dht.read()) {
     h = dht.readHumidity();
     t = dht.readTemperature();
@@ -61,7 +61,7 @@ void loop() {
     lcd.print("Humid :");
     lcd.print(h); lcd.print(" %");
   }
-  if (t > 35.5) {
+  if (t > 37.5) {
     digitalWrite(Relay_1, HIGH);
     Serial.println("Relay On");
   }
@@ -69,6 +69,7 @@ void loop() {
     digitalWrite(Relay_1, LOW);
     Serial.println("Relay Off");
   }
+  LED_ONLINE();
   delay(1000);
 }
 
