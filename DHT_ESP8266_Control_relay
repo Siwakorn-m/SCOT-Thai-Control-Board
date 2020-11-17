@@ -2,6 +2,10 @@
 #include "DHT.h"
 DHT dht(D3, DHT11, 0);
 
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
 #include <ESP8266WiFi.h>
 const char* ssid = "SCOT";
 const char* password = "scot1234";
@@ -16,6 +20,12 @@ float h, t;
 void setup() {
   Serial.begin(115200);
   dht.begin();
+  lcd.begin();
+  pinMode(Relay_1, OUTPUT);
+  pinMode(Relay_2, OUTPUT);
+  pinMode(Relay_3, OUTPUT);
+  pinMode(Relay_4, OUTPUT);
+  pinMode(LEDRUN, OUTPUT);
 
   WiFi.begin(ssid, password);
   Serial.println("\nConnecting to WiFi");
@@ -44,6 +54,12 @@ void loop() {
     h = dht.readHumidity();
     t = dht.readTemperature();
     Serial.printf("H = %.1f | T = %.1f", h, t); Serial.println();
+    lcd.setCursor(0, 0);
+    lcd.print("Temp  :");
+    lcd.print(t); lcd.print(" C");
+    lcd.setCursor(0, 1);
+    lcd.print("Humid :");
+    lcd.print(h); lcd.print(" %");
   }
   if (t > 35.5) {
     digitalWrite(Relay_1, HIGH);
